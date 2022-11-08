@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  api:
+    image: node
+    depends_on:
+      - db
+    build: ./squalizewithnode
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - 5000:5000
+    environment:
+      - DB_HOST=mysqldb
+      - DB_USER=$MYSQLDB_USER
+      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - DB_NAME=$MYSQLDB_DATABASE
+      - DB_PORT=$MYSQLDB_DOCKER_PORT
+    stdin_open: true
+    tty: true
+
+  db:
+    image: mysql
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
+
+    ports:
+      - 3304:3306
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  db:
